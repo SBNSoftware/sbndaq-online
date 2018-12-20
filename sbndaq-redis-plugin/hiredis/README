@@ -1,0 +1,7 @@
+This is a clone of the hiredis repository at version 0.14.0.
+(see https://github.com/redis/hiredis)
+
+The examples directory has been removed, and I have added a small cmake
+file to handle building in the mrb system. I also lightly edited async.c
+to remove an assert which is ignored anyway by the mrb build system.  
+Other than that, the repository is unchanged.
