@@ -1,5 +1,6 @@
 # make the shared library
-add_library(sbndaq_redis_plugin_hiredis SHARED
+cet_make_library( LIBRARY_NAME sbndaq_redis_plugin_hiredis
+        SOURCE
   net.c 
   hiredis.c 
   sds.c 
