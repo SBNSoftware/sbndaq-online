@@ -20,7 +20,7 @@ namespace sbndaq {
     std::string _server_name;
     unsigned _server_port;
     unsigned _maxlen;
-    redisAsyncContext *_context;
+    redisContext *_context;
 
   public:
     RedisMetric(fhicl::ParameterSet const& pset, std::string const& app_name): 
@@ -35,7 +35,7 @@ namespace sbndaq {
 
     virtual ~RedisMetric() {
       if (_context != NULL) {
-        redisAsyncDisconnect(_context);
+      //  redisAsyncDisconnect(_context);
       }
     }
 
@@ -45,18 +45,20 @@ namespace sbndaq {
     void ProcessRedisReply(void *reply) {}
     // TODO: implement
     std::string ValidateRedisName(const std::string &name) { 
-      return name;
+      std::string ret = name;
+      ret.erase(std::remove(ret.begin(), ret.end(), '.'), ret.end());
+      return ret;
     }
 
     void stopMetrics_() {
       if (_context != NULL) {
-        redisAsyncDisconnect(_context);
+      //  redisAsyncDisconnect(_context);
       }
     }
 
     void startMetrics_() {
-      //_context = redisConnect(_server_name.c_str(), _server_port);
-      _context = redisAsyncConnect(_server_name.c_str(), _server_port);
+      _context = redisConnect(_server_name.c_str(), _server_port);
+      //_context = redisAsyncConnect(_server_name.c_str(), _server_port);
       if (_context == NULL || _context->err) {
         if (_context) {
           std::cerr << "Error: " << _context->errstr << std::endl;
@@ -71,40 +73,50 @@ namespace sbndaq {
       (void) units;
       std::string redis_name = ValidateRedisName(name);
       if (_verbose) std::cout << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
-      int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * val %s", redis_name, _maxlen, value);
-      ProcessRedisReturn(ret);
+      //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %s", redis_name.c_str(), _maxlen, value);
+      //ProcessRedisReturn(ret);
+      void *reply = redisCommand(_context, "XADD %s MAXLEN ~ %i * dat %s", redis_name.c_str(), _maxlen, value.c_str());
+      ProcessRedisReply(reply);
     }
 
     void sendMetric_(const std::string &name, const int &value, const std::string &units) {
       (void) units;
       std::string redis_name = ValidateRedisName(name);
       if (_verbose) std::cout << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
-      int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * val %i", redis_name, _maxlen, value);
-      ProcessRedisReturn(ret);
+      //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %i", redis_name.c_str(), _maxlen, value);
+      //ProcessRedisReturn(ret);
+      void *reply = redisCommand(_context, "XADD %s MAXLEN ~ %i * dat %i", redis_name.c_str(), _maxlen, value);
+      ProcessRedisReply(reply);
     }
 
     void sendMetric_(const std::string &name, const double &value, const std::string &units) {
       (void) units;
       std::string redis_name = ValidateRedisName(name);
       if (_verbose) std::cout << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
-      int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * val %f", redis_name, _maxlen, value);
-      ProcessRedisReturn(ret);
+      //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %f", redis_name.c_str(), _maxlen, value);
+      //ProcessRedisReturn(ret);
+      void *reply = redisCommand(_context, "XADD %s MAXLEN ~ %i * dat %f", redis_name.c_str(), _maxlen, value);
+      ProcessRedisReply(reply);
     }
 
     void sendMetric_(const std::string &name, const float &value, const std::string &units) {
       (void) units;
       std::string redis_name = ValidateRedisName(name);
       if (_verbose) std::cout << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
-      int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * val %f", redis_name, _maxlen, value);
-      ProcessRedisReturn(ret);
+      //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %f", redis_name.c_str(), _maxlen, value);
+      //ProcessRedisReturn(ret);
+      void *reply = redisCommand(_context, "XADD %s MAXLEN ~ %i * dat %f", redis_name.c_str(), _maxlen, value);
+      ProcessRedisReply(reply);
     }
 
     void sendMetric_(const std::string &name, const unsigned long int &value, const std::string &units) {
       (void) units;
       std::string redis_name = ValidateRedisName(name);
       if (_verbose) std::cout << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
-      int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * val %u", redis_name, _maxlen, value);
-      ProcessRedisReturn(ret);
+      //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %u", redis_name.c_str(), _maxlen, value);
+      //ProcessRedisReturn(ret);
+      void *reply = redisCommand(_context, "XADD %s MAXLEN ~ %i * dat %u", redis_name.c_str(), _maxlen, value);
+      ProcessRedisReply(reply);
     }
   };
 
