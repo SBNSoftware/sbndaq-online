@@ -1,8 +1,5 @@
 add_subdirectory(hiredis)
 
-
-
-
 basic_plugin(redis "metric"
   artdaq-utilities_Plugins
   sbndaq_redis_plugin_hiredis
@@ -11,7 +8,6 @@ basic_plugin(redis "metric"
   ${CETLIB_EXCEPT}
   ${MF_MESSAGELOGGER}
   ${MF_UTILITIES}
-14	
 )
 
 install_headers()
