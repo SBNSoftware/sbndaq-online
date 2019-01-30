@@ -5,6 +5,8 @@
 // TODO: error handling
 // TODO: check if user provided "name" is a valid stream name for Redis
 
+#include <algorithm>
+
 #include "fhiclcpp/fwd.h"
 #include "artdaq-utilities/Plugins/MetricMacros.hh"
 
@@ -70,6 +72,8 @@ namespace sbndaq {
       std::string ret = name + _redis_key_postfix;
       // remove the dots...
       ret.erase(std::remove(ret.begin(), ret.end(), '.'), ret.end());
+      // replace all spaces w/ underscores
+      std::replace(ret.begin(), ret.end(), ' ', '_');
       return ret;
     }
 
