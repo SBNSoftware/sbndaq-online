@@ -36,7 +36,7 @@ namespace sbndaq {
     void newMessage() {
       _n_buffered_messages += 1;
       if (_n_buffered_messages >= _message_buffer_size) {
-        for (unsigned i = 0; i < _n_buffered_messages; i++) {
+        while (_n_buffered_messages != 0) {
           void *reply = NULL;
           redisGetReply(_context, &reply);
           bool success = ProcessRedisReply(reply);
