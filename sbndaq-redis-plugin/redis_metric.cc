@@ -26,6 +26,7 @@ namespace sbndaq {
     bool _verbose;
     std::string _server_name;
     std::string _redis_key_postfix;
+    std::string _redis_password;
     unsigned _server_port;
     unsigned _maxlen;
     unsigned _message_buffer_size;
@@ -60,6 +61,7 @@ namespace sbndaq {
       _n_buffered_messages = 0;
       _redis_key_postfix = pset.get<std::string>("redis_key_postfix", "");
       _failed_connection = false;
+      _redis_password = pset.get<std::string>("redis_password", "");
     }
 
     virtual ~RedisMetric() {
@@ -127,6 +129,24 @@ namespace sbndaq {
           TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: cannot allocate redis context." << std::endl;
         }
         _failed_connection = true;
+      }
+      // setup password if neccessary
+      if (!_failed_connection && _redis_password.size() > 0) {
+        TLOG(REDIS_TRACE_LEVEL_MSG) << "Authenticating redis connection" << std::endl;
+        if (_verbose) {
+          std::cout << "Authenticating redis connection" << std::endl;
+        }
+        void *reply = redisCommand(_context, "AUTH %s", _redis_password.c_str());
+        bool success = ProcessRedisReply(reply);
+        if (!success) {
+          _failed_connection = true;
+          TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis authentication failed" << std::endl;
+          if (_verbose) std::cerr << "Redis connection failed" << std::endl;
+        }
+        else {
+          TLOG(REDIS_TRACE_LEVEL_MSG) << "Redis authentication succeeded" << std::endl;
+          if (_verbose) std::cout << "Redis authentication succeeded" << std::endl;
+        }
       }
     }
 
