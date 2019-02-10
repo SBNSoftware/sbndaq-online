@@ -23,6 +23,7 @@ namespace sbndaq {
 
   class RedisMetric : public artdaq::MetricPlugin {
   private:
+    bool _silence_cerr;
     bool _verbose;
     std::string _server_name;
     std::string _redis_key_postfix;
@@ -51,6 +52,7 @@ namespace sbndaq {
   public:
     RedisMetric(fhicl::ParameterSet const& pset, std::string const& app_name): 
       MetricPlugin(pset, app_name),
+      _silence_cerr(pset.get<bool>("silence_cerr", false)),
       _verbose(pset.get<bool>("verbose",false)),
       _context(NULL)
     {
@@ -75,7 +77,7 @@ namespace sbndaq {
     // TODO: implement
     bool ProcessRedisReply(void *r) {
       if (r == NULL) {
-        if (_verbose) std::cerr << "Redis metric plugin error: NULL reply" << std::endl;
+        if (!_silence_cerr) std::cerr << "Redis metric plugin error: NULL reply" << std::endl;
         TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis metric plugin error: NULL reply" << std::endl;
         return false;
       }
@@ -83,7 +85,7 @@ namespace sbndaq {
       redisReply *reply = (redisReply *)r;
       switch (reply->type) {
         case REDIS_REPLY_ERROR:
-          if (_verbose) std::cerr << "Redis metric plugin error: " << reply->str << std::endl;
+          if (!_silence_cerr) std::cerr << "Redis metric plugin error: " << reply->str << std::endl;
           TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis metric plugin error: " << reply->str << std::endl;
           return false;
         case REDIS_REPLY_STATUS:
@@ -121,11 +123,11 @@ namespace sbndaq {
       //_context = redisAsyncConnect(_server_name.c_str(), _server_port);
       if (_context == NULL || _context->err) {
         if (_context) {
-          std::cerr << "Error in redis metric manager: " << _context->errstr << std::endl;
+          if (!_silence_cerr) std::cerr << "Error in redis metric manager: " << _context->errstr << std::endl;
           TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: " << _context->errstr << std::endl;
         }
         else {
-          std::cerr << "Error in redis metric manager: cannot allocate redis context." << std::endl;
+          if (!_silence_cerr) std::cerr << "Error in redis metric manager: cannot allocate redis context." << std::endl;
           TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: cannot allocate redis context." << std::endl;
         }
         _failed_connection = true;
@@ -141,7 +143,7 @@ namespace sbndaq {
         if (!success) {
           _failed_connection = true;
           TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis authentication failed" << std::endl;
-          if (_verbose) std::cerr << "Redis connection failed" << std::endl;
+          if (!_silence_cerr) std::cerr << "Redis connection failed" << std::endl;
         }
         else {
           TLOG(REDIS_TRACE_LEVEL_MSG) << "Redis authentication succeeded" << std::endl;
@@ -152,7 +154,7 @@ namespace sbndaq {
 
     void sendMetric_(const std::string &name, const std::string &value, const std::string &units) {
       if (_failed_connection) {
-        if (_verbose) {
+        if (!_silence_cerr) {
           std::cerr << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
         }
         TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
@@ -170,7 +172,7 @@ namespace sbndaq {
 
     void sendMetric_(const std::string &name, const int &value, const std::string &units) {
       if (_failed_connection) {
-        if (_verbose) {
+        if (!_silence_cerr) {
           std::cerr << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
         }
         TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
@@ -188,7 +190,7 @@ namespace sbndaq {
 
     void sendMetric_(const std::string &name, const double &value, const std::string &units) {
       if (_failed_connection) {
-        if (_verbose) {
+        if (!_silence_cerr) {
           std::cerr << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
         }
         TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
@@ -206,7 +208,7 @@ namespace sbndaq {
 
     void sendMetric_(const std::string &name, const float &value, const std::string &units) {
       if (_failed_connection) {
-        if (_verbose) {
+        if (!_silence_cerr) {
           std::cerr << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
         }
         TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
@@ -224,7 +226,7 @@ namespace sbndaq {
 
     void sendMetric_(const std::string &name, const unsigned long int &value, const std::string &units) {
       if (_failed_connection) {
-        if (_verbose) {
+        if (!_silence_cerr) {
           std::cerr << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
         }
         TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
