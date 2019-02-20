@@ -38,6 +38,7 @@ namespace sbndaq {
 
     void newMessage() {
       _n_buffered_messages += 1;
+			TLOG(23) << __func__ << ": _n_buffered_messages=" << _n_buffered_messages ;
       if (_n_buffered_messages >= _message_buffer_size) {
         while (_n_buffered_messages != 0) {
           void *reply = NULL;
