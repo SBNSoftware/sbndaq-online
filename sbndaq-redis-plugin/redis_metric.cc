@@ -10,6 +10,8 @@
 #include "fhiclcpp/fwd.h"
 #include "artdaq-utilities/Plugins/MetricMacros.hh"
 
+#include "messagefacility/MessageLogger/MessageLogger.h"
+
 #include "hiredis/hiredis.h"
 #include "hiredis/async.h"
 
@@ -23,8 +25,6 @@ namespace sbndaq {
 
   class RedisMetric : public artdaq::MetricPlugin {
   private:
-    bool _silence_cerr;
-    bool _verbose;
     std::string _server_name;
     std::string _redis_key_postfix;
     std::string _redis_password;
@@ -52,8 +52,6 @@ namespace sbndaq {
   public:
     RedisMetric(fhicl::ParameterSet const& pset, std::string const& app_name): 
       MetricPlugin(pset, app_name),
-      _silence_cerr(pset.get<bool>("silence_cerr", false)),
-      _verbose(pset.get<bool>("verbose",false)),
       _context(NULL)
     {
       _server_name = pset.get<std::string>("hostname", "localhost");
@@ -77,22 +75,20 @@ namespace sbndaq {
     // TODO: implement
     bool ProcessRedisReply(void *r) {
       if (r == NULL) {
-        if (!_silence_cerr) std::cerr << "Redis metric plugin error: NULL reply" << std::endl;
-        TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis metric plugin error: NULL reply" << std::endl;
+        mf::LogError("Redis Metric Plugin") << "Redis connection NULL reply";
+        TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis connection NULL reply";
         return false;
       }
 
       redisReply *reply = (redisReply *)r;
       switch (reply->type) {
         case REDIS_REPLY_ERROR:
-          if (!_silence_cerr) std::cerr << "Redis metric plugin error: " << reply->str << std::endl;
-          TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis metric plugin error: " << reply->str << std::endl;
+          mf::LogError("Redis Metric Plugin") << "Redis connection error reply: " << reply->str;
+          TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis connection error reply: " << reply->str;
           return false;
         case REDIS_REPLY_STATUS:
-          if (_verbose) {
-            std::cout << "Redis reply status: " << reply->str << std::endl;
-          }
-          TLOG(REDIS_TRACE_LEVEL_MSG) << "Redis reply status: " << reply->str << std::endl;
+          mf::LogDebug("Redis Metric Plugin") << "Message reply status: " << reply->str;
+          TLOG(REDIS_TRACE_LEVEL_MSG) << "Message reply status: " << reply->str;
           break;
         default:
           break;
@@ -123,47 +119,43 @@ namespace sbndaq {
       //_context = redisAsyncConnect(_server_name.c_str(), _server_port);
       if (_context == NULL || _context->err) {
         if (_context) {
-          if (!_silence_cerr) std::cerr << "Error in redis metric manager: " << _context->errstr << std::endl;
-          TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: " << _context->errstr << std::endl;
+          mf::LogError("Redis Metric Plugin") << "Redis connection error reply: " << _context->errstr;
+          TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis connection error reply: " << _context->errstr;
         }
         else {
-          if (!_silence_cerr) std::cerr << "Error in redis metric manager: cannot allocate redis context." << std::endl;
-          TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: cannot allocate redis context." << std::endl;
+          mf::LogError("Redis Metric Plugin") << "Cannot allocate redis context.";
+          TLOG(REDIS_TRACE_LEVEL_ERR) << "Cannot allocate redis context.";
         }
         _failed_connection = true;
       }
       // setup password if neccessary
       if (!_failed_connection && _redis_password.size() > 0) {
-        TLOG(REDIS_TRACE_LEVEL_MSG) << "Authenticating redis connection" << std::endl;
-        if (_verbose) {
-          std::cout << "Authenticating redis connection" << std::endl;
-        }
+        TLOG(REDIS_TRACE_LEVEL_MSG) << "Authenticating redis connection";
+        mf::LogInfo("Redis Metric Plugin") << "Authenticating redis connection";
         void *reply = redisCommand(_context, "AUTH %s", _redis_password.c_str());
         bool success = ProcessRedisReply(reply);
         if (!success) {
           _failed_connection = true;
-          TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis authentication failed" << std::endl;
-          if (!_silence_cerr) std::cerr << "Redis connection failed" << std::endl;
+          TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis authentication failed";
+          mf::LogError("Redis Metric Plugin") << "Redis connection failed";
         }
         else {
-          TLOG(REDIS_TRACE_LEVEL_MSG) << "Redis authentication succeeded" << std::endl;
-          if (_verbose) std::cout << "Redis authentication succeeded" << std::endl;
+          TLOG(REDIS_TRACE_LEVEL_MSG) << "Redis authentication succeeded";
+          mf::LogInfo("Redis Metric Plugin") << "Redis authentication succeeded";
         }
       }
     }
 
     void sendMetric_(const std::string &name, const std::string &value, const std::string &units) {
       if (_failed_connection) {
-        if (!_silence_cerr) {
-          std::cerr << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
-        }
-        TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
+        mf::LogWarning("Redis Metric Plugin") << "Attempting to send metric when connection failed.";
+        TLOG(REDIS_TRACE_LEVEL_ERR) << "Attempting to send metric when connection failed.";
         return;
       }
       (void) units;
       std::string redis_name = ValidateRedisName(name);
-      if (_verbose) std::cout << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
-      TLOG(REDIS_TRACE_LEVEL_MSG) <<  "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
+      mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
+      TLOG(REDIS_TRACE_LEVEL_MSG) <<  "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %s", redis_name.c_str(), _maxlen, value);
       //ProcessRedisReturn(ret);
       redisAppendCommand(_context, "XADD %s MAXLEN ~ %i * dat %s", redis_name.c_str(), _maxlen, value.c_str());
@@ -172,16 +164,14 @@ namespace sbndaq {
 
     void sendMetric_(const std::string &name, const int &value, const std::string &units) {
       if (_failed_connection) {
-        if (!_silence_cerr) {
-          std::cerr << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
-        }
-        TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
+        mf::LogWarning("Redis Metric Plugin") << "Attempting to send metric when connection failed.";
+        TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed.";
         return;
       }
       (void) units;
       std::string redis_name = ValidateRedisName(name);
-      if (_verbose) std::cout << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
-      TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
+      mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
+      TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %i", redis_name.c_str(), _maxlen, value);
       //ProcessRedisReturn(ret);
       redisAppendCommand(_context, "XADD %s MAXLEN ~ %i * dat %i", redis_name.c_str(), _maxlen, value);
@@ -190,16 +180,14 @@ namespace sbndaq {
 
     void sendMetric_(const std::string &name, const double &value, const std::string &units) {
       if (_failed_connection) {
-        if (!_silence_cerr) {
-          std::cerr << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
-        }
-        TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
+        mf::LogWarning("Redis Metric Plugin") << "Attempting to send metric when connection failed.";
+        TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed.";
         return;
       }
       (void) units;
       std::string redis_name = ValidateRedisName(name);
-      if (_verbose) std::cout << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
-      TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
+      mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
+      TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %f", redis_name.c_str(), _maxlen, value);
       //ProcessRedisReturn(ret);
       redisAppendCommand(_context, "XADD %s MAXLEN ~ %i * dat %f", redis_name.c_str(), _maxlen, value);
@@ -208,16 +196,14 @@ namespace sbndaq {
 
     void sendMetric_(const std::string &name, const float &value, const std::string &units) {
       if (_failed_connection) {
-        if (!_silence_cerr) {
-          std::cerr << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
-        }
-        TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
+        mf::LogWarning("Redis Metric Plugin") << "Attempting to send metric when connection failed.";
+        TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed.";
         return;
       }
       (void) units;
       std::string redis_name = ValidateRedisName(name);
-      if (_verbose) std::cout << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
-      TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
+      mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
+      TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %f", redis_name.c_str(), _maxlen, value);
       //ProcessRedisReturn(ret);
       redisAppendCommand(_context, "XADD %s MAXLEN ~ %i * dat %f", redis_name.c_str(), _maxlen, value);
@@ -226,16 +212,14 @@ namespace sbndaq {
 
     void sendMetric_(const std::string &name, const unsigned long int &value, const std::string &units) {
       if (_failed_connection) {
-        if (!_silence_cerr) {
-          std::cerr << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
-        }
-        TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed." << std::endl;
+        mf::LogWarning("Redis Metric Plugin") << "Attempting to send metric when connection failed.";
+        TLOG(REDIS_TRACE_LEVEL_ERR) << "Error in redis metric manager: attempting to send metric when connection failed.";
         return;
       }
       (void) units;
       std::string redis_name = ValidateRedisName(name);
-      if (_verbose) std::cout << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
-      TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")" << std::endl;
+      mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
+      TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %u", redis_name.c_str(), _maxlen, value);
       //ProcessRedisReturn(ret);
       redisAppendCommand(_context, "XADD %s MAXLEN ~ %i * dat %u", redis_name.c_str(), _maxlen, value);
