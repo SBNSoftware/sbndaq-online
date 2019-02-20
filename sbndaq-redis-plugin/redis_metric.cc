@@ -6,6 +6,7 @@
 // TODO: check if user provided "name" is a valid stream name for Redis
 
 #include <algorithm>
+#include <fstream>  
 
 #include "fhiclcpp/fwd.h"
 #include "artdaq-utilities/Plugins/MetricMacros.hh"
@@ -62,6 +63,21 @@ namespace sbndaq {
       _redis_key_postfix = pset.get<std::string>("redis_key_postfix", "");
       _failed_connection = false;
       _redis_password = pset.get<std::string>("redis_password", "");
+      // also check for file if password not given
+      if (_redis_password.size() == 0) {
+        std::string redis_password_file = pset.get<std::string>("redis_passfile", "");
+        if (redis_password_file.size() > 0) {
+          std::ifstream passfile(redis_password_file);
+          if (passfile.good()) {
+            passfile >> _redis_password;
+          }
+          else {
+            mf::LogError("Redis Metric Plugin") << "Failed to open password file";
+            TLOG(REDIS_TRACE_LEVEL_ERR) << "Failed to open password file";
+          }
+        }
+      }
+
     }
 
     virtual ~RedisMetric() {
