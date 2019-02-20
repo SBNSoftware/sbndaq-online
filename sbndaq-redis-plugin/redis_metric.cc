@@ -1,5 +1,5 @@
 // Author: Gray Putnam
-// Last Modified: 18 December 2018
+// Last Modified: 20 February 2019
 // An implementation of the MetricPlugin interface for Redis
 
 // TODO: error handling
