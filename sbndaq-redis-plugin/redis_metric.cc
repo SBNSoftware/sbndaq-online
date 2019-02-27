@@ -16,6 +16,8 @@
 #include "hiredis/hiredis.h"
 #include "hiredis/async.h"
 
+#include "Utilities.h"
+
 #define TRACE_NAME "redis_metric"
 #include "trace.h"
 #define REDIS_TRACE_LEVEL_ERR 10
@@ -83,7 +85,8 @@ namespace sbndaq {
 
     virtual ~RedisMetric() {
       if (_context != NULL) {
-      //  redisAsyncDisconnect(_context);
+        //  redisAsyncDisconnect(_context);
+        redisFree(_context);
       }
     }
 
@@ -114,26 +117,18 @@ namespace sbndaq {
       return true;
     }
 
-    // TODO: implement
-    std::string ValidateRedisName(const std::string &name) { 
-      // add the post fix
-      std::string ret = name + _redis_key_postfix;
-      // remove the dots...
-      ret.erase(std::remove(ret.begin(), ret.end(), '.'), ret.end());
-      // replace all spaces w/ underscores
-      std::replace(ret.begin(), ret.end(), ' ', '_');
-      return ret;
-    }
-
     void stopMetrics_() {
       if (_context != NULL) {
-      //  redisAsyncDisconnect(_context);
+        //  redisAsyncDisconnect(_context);
+        redisFree(_context);
+        _context = NULL;
       }
     }
 
     void startMetrics_() {
-      _context = redisConnect(_server_name.c_str(), _server_port);
-      //_context = redisAsyncConnect(_server_name.c_str(), _server_port);
+      void *password_reply = NULL;
+      _context = Connect2Redis(_server_name, _server_port, _redis_password, &password_reply);
+
       if (_context == NULL || _context->err) {
         if (_context) {
           mf::LogError("Redis Metric Plugin") << "Redis connection error reply: " << _context->errstr;
@@ -145,12 +140,10 @@ namespace sbndaq {
         }
         _failed_connection = true;
       }
-      // setup password if neccessary
+
+      // check password setup if neccessary
       if (!_failed_connection && _redis_password.size() > 0) {
-        TLOG(REDIS_TRACE_LEVEL_MSG) << "Authenticating redis connection";
-        mf::LogInfo("Redis Metric Plugin") << "Authenticating redis connection";
-        void *reply = redisCommand(_context, "AUTH %s", _redis_password.c_str());
-        bool success = ProcessRedisReply(reply);
+        bool success = ProcessRedisReply(password_reply);
         if (!success) {
           _failed_connection = true;
           TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis authentication failed";
@@ -170,7 +163,7 @@ namespace sbndaq {
         return;
       }
       (void) units;
-      std::string redis_name = ValidateRedisName(name);
+      std::string redis_name =ValidateRedisName(name + _redis_key_postfix);
       mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       TLOG(REDIS_TRACE_LEVEL_MSG) <<  "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %s", redis_name.c_str(), _maxlen, value);
@@ -186,7 +179,7 @@ namespace sbndaq {
         return;
       }
       (void) units;
-      std::string redis_name = ValidateRedisName(name);
+      std::string redis_name =ValidateRedisName(name + _redis_key_postfix);
       mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %i", redis_name.c_str(), _maxlen, value);
@@ -202,7 +195,7 @@ namespace sbndaq {
         return;
       }
       (void) units;
-      std::string redis_name = ValidateRedisName(name);
+      std::string redis_name =ValidateRedisName(name + _redis_key_postfix);
       mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %f", redis_name.c_str(), _maxlen, value);
@@ -218,7 +211,7 @@ namespace sbndaq {
         return;
       }
       (void) units;
-      std::string redis_name = ValidateRedisName(name);
+      std::string redis_name =ValidateRedisName(name + _redis_key_postfix);
       mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %f", redis_name.c_str(), _maxlen, value);
@@ -234,7 +227,7 @@ namespace sbndaq {
         return;
       }
       (void) units;
-      std::string redis_name = ValidateRedisName(name);
+      std::string redis_name =ValidateRedisName(name + _redis_key_postfix);
       mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       //int ret = redisAsyncCommand(_context, CallProcessRedisReply, this, "XADD %s MAXLEN ~ %i * dat %u", redis_name.c_str(), _maxlen, value);
