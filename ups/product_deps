@@ -33,7 +33,7 @@ flcdir  product_dir     fcl
 
 product          version
 artdaq_utilities v1_04_08
-art              v2_10_02
+art              v2_10_03
 cetbuildtools   v7_02_01       -       only_for_build
 end_product_list
 
