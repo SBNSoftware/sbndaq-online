@@ -2,7 +2,7 @@
 
 # The *parent* line must the first non-commented line and defines this product and version
 # The version should be of the form vxx_yy_zz (e.g. v01_02_03)
-parent sbndaq_redis_plugin v0_01_01
+parent sbndaq_redis_plugin v0_01_04
 defaultqual e15
 
 # These optional lines define the installed directories where headers,
@@ -33,17 +33,17 @@ flcdir  product_dir     fcl
 
 product          version
 artdaq_utilities v1_04_10
-art              v2_11_01
+art              v2_10_03
 cetbuildtools   v7_02_01       -       only_for_build
 end_product_list
 
 # We now define allowed qualifiers and the corresponding qualifiers for the depdencies.
 # Make a table by adding columns before "notes". 
 qualifier	artdaq_utilities       art 	     notes
-e15:debug	debug:e15:s67	         debug:e15 
-e15:prof	prof:e15:s67		       prof:e15
-e17:debug	debug:e17:s67	         debug:e17 
-e17:prof	prof:e17:s67		       prof:e17
+e15:debug	debug:e15:s65	         debug:e15 
+e15:prof	prof:e15:s65		       prof:e15
+e17:debug	debug:e17:s65	         debug:e17 
+e17:prof	prof:e17:s65		       prof:e17
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
