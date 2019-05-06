@@ -34,17 +34,18 @@ cet_cmake_env()
 cet_set_compiler_flags(DIAGS CAUTIOUS
   WERROR
   NO_UNDEFINED
-  EXTRA_FLAGS -pedantic
+#  EXTRA_FLAGS -pedantic
 )
 cet_report_compiler_flags()
 
 # these are minimum required versions, not the actual product versions
 find_ups_product( art v1_08_00 )
 find_ups_product( artdaq_utilities v1_04_00 )
+find_ups_product( TRACE v3_13_12 )
 find_ups_product( cetbuildtools v4_14_01 )
 
 # macros for dictionary and simple_plugin
-include(ArtDictionary)
+#include(ArtDictionary)
 include(ArtMake)
 include(BuildPlugins)
 
