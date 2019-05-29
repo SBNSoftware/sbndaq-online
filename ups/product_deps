@@ -2,7 +2,7 @@
 
 # The *parent* line must the first non-commented line and defines this product and version
 # The version should be of the form vxx_yy_zz (e.g. v01_02_03)
-parent sbndaq_redis_plugin v0_02_00
+parent sbndaq_redis_plugin v0_02_01
 defaultqual e17:s83
 
 # These optional lines define the installed directories where headers,
@@ -32,18 +32,14 @@ flcdir  product_dir     fcl
 # Add the dependent product and version
 
 product          version
-artdaq_utilities v1_04_10
+artdaq_utilities v1_04_11
 art              v3_02_05
-cetbuildtools   v7_02_01       -       only_for_build
+cetbuildtools   v7_11_00       -       only_for_build
 end_product_list
 
 # We now define allowed qualifiers and the corresponding qualifiers for the depdencies.
 # Make a table by adding columns before "notes". 
 qualifier	artdaq_utilities       art 	     notes
-e15:debug:s65	debug:e15:s65	       debug:e15 
-e15:prof:s65	prof:e15:s65	       prof:e15
-e17:debug:s65	debug:e17:s65	       debug:e17 
-e17:prof:s65	prof:e17:s65	       prof:e17
 e17:debug:s83	debug:e17:s83	       debug:e17 
 e17:prof:s83	prof:e17:s83	       prof:e17
 end_qualifier_list
