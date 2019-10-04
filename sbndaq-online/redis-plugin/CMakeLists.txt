@@ -1,6 +1,6 @@
 basic_plugin(redis "metric"
   artdaq-utilities_Plugins
-  sbndaq_online_hiredis
+  sbndaq_online_redis_connection
   ${FHICLCPP}
   ${CETLIB}
   ${CETLIB_EXCEPT}

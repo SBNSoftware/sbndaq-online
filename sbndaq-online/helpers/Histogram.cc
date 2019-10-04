@@ -6,7 +6,7 @@
 #include "Histogram.h"
 #include "Binary.h"
 
-int sbndaq::SendHistogram(redisContext *redis, const std::string &key, TH1 *hist, size_t padding_x, size_t padding_y, size_t size_x, size_t size_y) {
+void sbndaq::SendHistogram(const std::string &key, TH1 *hist, size_t padding_x, size_t padding_y, size_t size_x, size_t size_y) {
   TCanvas *c = new TCanvas;
   hist->Draw();
   TImage *img = TImage::Create();
@@ -15,13 +15,12 @@ int sbndaq::SendHistogram(redisContext *redis, const std::string &key, TH1 *hist
   int image_len = -1;
 
   img->GetImageBuffer(&image_data, &image_len); 
-  int ret = SendBinary(redis, key, image_data, image_len);
+  SendBinary(key, image_data, image_len);
   delete c; 
   delete img;
-  return ret;
 }
 
-int sbndaq::SendHistogram(redisContext *redis, const std::string &key, TH2 *hist, size_t padding_x, size_t padding_y, size_t size_x, size_t size_y) {
+void sbndaq::SendHistogram(const std::string &key, TH2 *hist, size_t padding_x, size_t padding_y, size_t size_x, size_t size_y) {
   TCanvas *c = new TCanvas;
   hist->Draw();
   TImage *img = TImage::Create();
@@ -30,9 +29,8 @@ int sbndaq::SendHistogram(redisContext *redis, const std::string &key, TH2 *hist
   int image_len = -1;
 
   img->GetImageBuffer(&image_data, &image_len); 
-  int ret = SendBinary(redis, key, image_data, image_len);
+  SendBinary(key, image_data, image_len);
   delete c; 
   delete img;
-  return ret;
 }
 
