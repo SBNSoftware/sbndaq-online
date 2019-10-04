@@ -1,8 +1,8 @@
 # ======================================================================
-#  sbndaq-redis-plugin main build file
+#  sbndaq-online main build file
 #
 #  cd .../path/to/build/directory
-#  source .../path/to/sbndaq-redis-plugin/ups/setup_for_development <-d|-p>
+#  source .../path/to/sbndaq-online/ups/setup_for_development <-d|-p>
 #  cmake [-DCMAKE_INSTALL_PREFIX=/install/path]
 #        -DCMAKE_BUILD_TYPE=$CETPKG_TYPE
 #        $CETPKG_SOURCE
@@ -16,7 +16,7 @@
 # use cmake 2.8 or later
 cmake_minimum_required (VERSION 2.8)
 
-project(sbndaq-redis-plugin)
+project(sbndaq-online)
 
 # cetbuildtools contains our cmake modules
 SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
@@ -40,6 +40,7 @@ cet_report_compiler_flags()
 
 # these are minimum required versions, not the actual product versions
 find_ups_product( art v1_08_00 )
+find_ups_product( art_root_io v1_00_05)
 find_ups_product( artdaq_utilities v1_04_00 )
 find_ups_product( TRACE v3_13_12 )
 find_ups_product( cetbuildtools v4_14_01 )
@@ -50,7 +51,7 @@ include(ArtMake)
 include(BuildPlugins)
 
 # ADD SOURCE CODE SUBDIRECTORIES HERE
-add_subdirectory(sbndaq-redis-plugin)
+add_subdirectory(sbndaq-online)
 
 # ups - table and config files
 add_subdirectory(ups)

@@ -1,8 +1,6 @@
-add_subdirectory(hiredis)
-
 basic_plugin(redis "metric"
   artdaq-utilities_Plugins
-  sbndaq_redis_plugin_hiredis
+  sbndaq_online_hiredis
   ${FHICLCPP}
   ${CETLIB}
   ${CETLIB_EXCEPT}
@@ -10,6 +8,4 @@ basic_plugin(redis "metric"
   ${MF_UTILITIES}
 )
 
-install_headers()
-install_source()
-install_fhicl()
+

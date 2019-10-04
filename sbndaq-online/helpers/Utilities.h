@@ -1,10 +1,11 @@
-#ifndef __SBNDAQ_REDIS_PLUGIN_UTILITIES_HH_
-#define __SBNDAQ_REDIS_PLUGIN_UTILITIES_HH_
+#ifndef __SBNDAQ_ONLINE_UTILITIES_HH_
+#define __SBNDAQ_ONLINE_UTILITIES_HH_
 
+#include <algorithm>
 #include <string>
 
-#include "hiredis/hiredis.h"
-#include "hiredis/async.h"
+#include "../hiredis/hiredis.h"
+#include "../hiredis/async.h"
 
 
 namespace sbndaq {
@@ -37,6 +38,6 @@ std::string ValidateRedisName(const std::string &name) {
 }
 
 
-} // end namespace sbndqm
+} // end namespace sbndaq
 
 #endif 

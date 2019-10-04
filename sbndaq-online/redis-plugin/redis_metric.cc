@@ -13,10 +13,10 @@
 
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
-#include "hiredis/hiredis.h"
-#include "hiredis/async.h"
+#include "../hiredis/hiredis.h"
+#include "../hiredis/async.h"
 
-#include "Utilities.h"
+#include "../helpers/Utilities.h"
 
 #define TRACE_NAME "redis_metric"
 #include "trace.h"
