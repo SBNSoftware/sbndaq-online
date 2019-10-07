@@ -1,6 +1,16 @@
 #ifndef _sbndaq_online_DisplayTypes_h_
 #define _sbndaq_online_DisplayTypes_h_
 
+// Macro to get the name of a binary type for bookkeeping in database entries
+//
+// Usage: for a binary type, binary_t, where binary_t is one of the
+//        REGISTER'd types below, call:
+//
+//          DisplayType<binary_t>::name
+//
+//        This will return a const char * (null-terminated C-string) of the
+//        binary type name
+
 template<typename T>
 struct DisplayType;
 #define REGISTER_DISPLAY_TYPE(type) template <> struct DisplayType<type> \
