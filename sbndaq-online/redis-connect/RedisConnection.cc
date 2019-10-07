@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "RedisConnection.h"
 
 #include "messagefacility/MessageLogger/MessageLogger.h"
@@ -6,17 +8,12 @@
 
 #include "../RedisTrace.h"
 
-sbndaq::RedisConnection::RedisConnection(const fhicl::ParameterSet& pset, art::ActivityRegistry& reg):
-  RedisConnection(pset) 
-{
-  reg.sPostModule.watch(this, &RedisConnection::FlushPostModule);
-}
 
 sbndaq::RedisConnection::RedisConnection(const fhicl::ParameterSet& pset) {
   fRedisPort = pset.get<unsigned>("port", 6379);
   fRedisHost = pset.get<std::string>("host", "localhost");
-  fMessageBufferSize = pset.get<unsigned>("message_buffer_size", 1); // don't buffer by default
-  fFlushPostEvent = pset.get<bool>("flush_post_event", true);
+  // don't buffer by default (1). Set to (-1) to rely on calls to Flush().
+  fMessageBufferSize = pset.get<int>("message_buffer_size", 1); 
   fNMessages = 0;
 
   fFailedConnection = false;
@@ -41,11 +38,11 @@ sbndaq::RedisConnection::RedisConnection(const fhicl::ParameterSet& pset) {
 
   if (fRedisContext == NULL || fRedisContext->err) {
     if (fRedisContext) {
-      mf::LogError("Redis Metric Plugin") << "Redis connection error reply: " << fRedisContext->errstr;
+      mf::LogError("Redis Connection") << "Redis connection error reply: " << fRedisContext->errstr;
       TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis connection error reply: " << fRedisContext->errstr;
     }
     else {
-      mf::LogError("Redis Metric Plugin") << "Cannot allocate redis context.";
+      mf::LogError("Redis Connection") << "Cannot allocate redis context.";
       TLOG(REDIS_TRACE_LEVEL_ERR) << "Cannot allocate redis context.";
     }
     fFailedConnection = true;
@@ -57,11 +54,11 @@ sbndaq::RedisConnection::RedisConnection(const fhicl::ParameterSet& pset) {
     if (!success) {
       fFailedConnection = true;
       TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis authentication failed";
-      mf::LogError("Redis Metric Plugin") << "Redis connection failed";
+      mf::LogError("Redis Connection") << "Redis connection failed";
     }
     else {
       TLOG(REDIS_TRACE_LEVEL_MSG) << "Redis authentication succeeded";
-      mf::LogInfo("Redis Metric Plugin") << "Redis authentication succeeded";
+      mf::LogInfo("Redis Connection") << "Redis authentication succeeded";
         }
       }
 
@@ -78,7 +75,7 @@ void sbndaq::RedisConnection::ProcessRedisReturn(int retval) {}
 // TODO: implement
 bool sbndaq::RedisConnection::ProcessRedisReply(void *r) {
   if (r == NULL) {
-    mf::LogError("Redis Metric Plugin") << "Redis connection NULL reply";
+    mf::LogError("Redis Connection") << "Redis connection NULL reply";
     TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis connection NULL reply";
     return false;
   }
@@ -86,11 +83,11 @@ bool sbndaq::RedisConnection::ProcessRedisReply(void *r) {
   redisReply *reply = (redisReply *)r;
   switch (reply->type) {
     case REDIS_REPLY_ERROR:
-      mf::LogError("Redis Metric Plugin") << "Redis connection error reply: " << reply->str;
+      mf::LogError("Redis Connection") << "Redis connection error reply: " << reply->str;
       TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis connection error reply: " << reply->str;
       return false;
     case REDIS_REPLY_STATUS:
-      mf::LogDebug("Redis Metric Plugin") << "Message reply status: " << reply->str;
+      mf::LogDebug("Redis Connection") << "Message reply status: " << reply->str;
       TLOG(REDIS_TRACE_LEVEL_MSG) << "Message reply status: " << reply->str;
       break;
     default:
@@ -102,21 +99,14 @@ bool sbndaq::RedisConnection::ProcessRedisReply(void *r) {
   
 void sbndaq::RedisConnection::NewMessage() {
   fNMessages += 1;
-  // if configured to flush on event end, wait to do that
-  if (fFlushPostEvent) return;
 
-  if (fNMessages >= fMessageBufferSize) {
+  if (fMessageBufferSize >= 0 && fNMessages >= (unsigned)fMessageBufferSize) {
     DoFlush();
   }
 }
 
-void sbndaq::RedisConnection::FlushPostModule(const art::ModuleContext &context) {
-  (void) context;
-  Flush();
-}
-
 void sbndaq::RedisConnection::Flush() {
-  if (fFlushPostEvent) DoFlush();
+  DoFlush();
 }
 
 void sbndaq::RedisConnection::DoFlush() {
@@ -132,7 +122,7 @@ void sbndaq::RedisConnection::DoFlush() {
 
 bool sbndaq::RedisConnection::CheckConnection() {
   if (fFailedConnection) {
-    mf::LogWarning("Redis Metric Plugin") << "Attempting to send metric when connection failed.";
+    mf::LogWarning("Redis Connection") << "Attempting to send metric when connection failed.";
     TLOG(REDIS_TRACE_LEVEL_ERR) << "Attempting to send metric when connection failed.";
   }
   return fFailedConnection;

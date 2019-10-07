@@ -53,8 +53,6 @@ namespace sbndaq {
       if (pset.has_key("redis") && !pset.get<bool>("use_local_redis", true)) {
         _redis = new RedisConnection(pset.get<fhicl::ParameterSet>("redis"));
         _owns_redis_connection = true;
-        // make sure it is not set to flush post event -- the relevant function will never be called
-        _redis->SetFlushPostEvent(false);
       }
       else {
         art::ServiceHandle<sbndaq::RedisConnectionService> handle;

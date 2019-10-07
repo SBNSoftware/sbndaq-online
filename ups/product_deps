@@ -35,14 +35,15 @@ product          version
 artdaq_utilities v1_05_00
 art              v3_02_05
 art_root_io	v1_00_05
+jsoncpp		v1_7_7c
 cetbuildtools   v7_13_02       -       only_for_build
 end_product_list
 
 # We now define allowed qualifiers and the corresponding qualifiers for the depdencies.
 # Make a table by adding columns before "notes". 
-qualifier	artdaq_utilities       art		art_root_io	notes
-e17:debug:s83	debug:e17:s83	       debug:e17 	e17:prof
-e17:prof:s83	prof:e17:s83	       prof:e17		e17:prof
+qualifier	artdaq_utilities       art		art_root_io	jsoncpp	notes
+e17:debug:s83	debug:e17:s83	       debug:e17 	e17:debug	e17:debug	
+e17:prof:s83	prof:e17:s83	       prof:e17		e17:prof	e17:prof
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
