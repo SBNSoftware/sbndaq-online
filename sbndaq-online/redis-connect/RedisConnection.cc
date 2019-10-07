@@ -59,9 +59,8 @@ sbndaq::RedisConnection::RedisConnection(const fhicl::ParameterSet& pset) {
     else {
       TLOG(REDIS_TRACE_LEVEL_MSG) << "Redis authentication succeeded";
       mf::LogInfo("Redis Connection") << "Redis authentication succeeded";
-        }
-      }
-
+    }
+  }
 }
 
 sbndaq::RedisConnection::~RedisConnection() {
