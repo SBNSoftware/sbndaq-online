@@ -50,7 +50,7 @@ namespace sbndaq {
       _redis_key_prefix = pset.get<std::string>("redis_key_prefix", "");
       _stream_maxlen = pset.get<unsigned>("maxlen", 1000); // TODO: should maxlen have a max by default? Would be good to 
 
-      if (pset.has_key("redis") && !pset.get<bool>("use_local_redis", true)) {
+      if (pset.has_key("redis") && pset.get<bool>("use_local_redis", true)) {
         _redis = new RedisConnection(pset.get<fhicl::ParameterSet>("redis"));
         _owns_redis_connection = true;
       }

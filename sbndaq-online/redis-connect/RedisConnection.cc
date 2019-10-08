@@ -79,21 +79,42 @@ bool sbndaq::RedisConnection::ProcessRedisReply(void *r) {
     return false;
   }
 
+  bool success = true;
   redisReply *reply = (redisReply *)r;
   switch (reply->type) {
     case REDIS_REPLY_ERROR:
-      mf::LogError("Redis Connection") << "Redis connection error reply: " << reply->str;
-      TLOG(REDIS_TRACE_LEVEL_ERR) << "Redis connection error reply: " << reply->str;
-      return false;
+      mf::LogError("Redis Connection") << "Error reply status: " << reply->str;
+      TLOG(REDIS_TRACE_LEVEL_ERR) << "Error reply status: " << reply->str;
+      success = false;
+      break;
     case REDIS_REPLY_STATUS:
       mf::LogDebug("Redis Connection") << "Message reply status: " << reply->str;
       TLOG(REDIS_TRACE_LEVEL_MSG) << "Message reply status: " << reply->str;
       break;
+    case REDIS_REPLY_NIL:
+      mf::LogDebug("Redis Connection") << "Nil reply";
+      TLOG(REDIS_TRACE_LEVEL_MSG) << "Nil reply";
+      break;
+    case REDIS_REPLY_INTEGER:
+      mf::LogDebug("Redis Connection") << "Message reply integer: " << reply->integer;
+      TLOG(REDIS_TRACE_LEVEL_MSG) << "Message reply integer: " << reply->integer;
+      break;
+    case REDIS_REPLY_STRING:
+      mf::LogDebug("Redis Connection") << "Message reply string: " << reply->str;
+      TLOG(REDIS_TRACE_LEVEL_MSG) << "Message reply string: " << reply->str;
+      break;
+    case REDIS_REPLY_ARRAY:
+      mf::LogDebug("Redis Connection") << "Message reply array";
+      TLOG(REDIS_TRACE_LEVEL_MSG) << "Message reply array";
+      break;
     default:
+      mf::LogError("Redis Connection") << "Bad Redis reply type: " << reply->type;
+      TLOG(REDIS_TRACE_LEVEL_ERR) << "Bad Redis reply type: " << reply->type;
+      success = false;
       break;
   }
   freeReplyObject(reply);
-  return true;
+  return success;
 }
   
 void sbndaq::RedisConnection::NewMessage() {
@@ -124,7 +145,7 @@ bool sbndaq::RedisConnection::CheckConnection() {
     mf::LogWarning("Redis Connection") << "Attempting to send metric when connection failed.";
     TLOG(REDIS_TRACE_LEVEL_ERR) << "Attempting to send metric when connection failed.";
   }
-  return fFailedConnection;
+  return !fFailedConnection;
 }
 
 void sbndaq::RedisConnection::Command(const char *fmt, ...) {
@@ -133,6 +154,7 @@ void sbndaq::RedisConnection::Command(const char *fmt, ...) {
   va_list argp;
   va_start(argp, fmt);
   redisvAppendCommand(fRedisContext, fmt, argp);
+  va_end(argp);
   NewMessage();
 }
 
