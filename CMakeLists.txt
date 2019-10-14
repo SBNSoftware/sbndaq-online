@@ -39,11 +39,11 @@ cet_set_compiler_flags(DIAGS CAUTIOUS
 cet_report_compiler_flags()
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( art v1_08_00 )
+find_ups_product( art v3_02_05 )
 find_ups_product( art_root_io v1_00_05)
-find_ups_product( artdaq_utilities v1_04_00 )
-find_ups_product( TRACE v3_13_12 )
-find_ups_product( cetbuildtools v4_14_01 )
+find_ups_product( artdaq_utilities  v1_05_02)
+find_ups_product( TRACE v3_15_03 )
+find_ups_product( cetbuildtools v7_13_02 )
 
 # macros for dictionary and simple_plugin
 #include(ArtDictionary)
