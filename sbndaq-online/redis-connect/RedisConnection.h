@@ -1,5 +1,8 @@
 #ifndef _sbndaq_online_RedisConnection_h_
 #define _sbndaq_online_RedisConnection_h_
+
+#include <mutex>
+
 #include "fhiclcpp/ParameterSet.h"
 #include "../hiredis/hiredis.h"
 #include "../hiredis/async.h"
@@ -31,6 +34,7 @@ private:
   std::string fRedisHost; 
   redisContext *fRedisContext;
   bool fFailedConnection;
+  std::mutex fRedisLock;
 };
 
 } // end namespace sbndaq
