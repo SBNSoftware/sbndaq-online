@@ -89,6 +89,13 @@ void sbndaq::GenerateMetricConfig(const fhicl::ParameterSet &config) {
       redis_metric_config.display_range = {};
     }
 
+    if (this_config.has_key("display_operation")) {
+      redis_metric_config.display_operation = this_config.get<std::string>("display_operation");
+    }
+    else {
+      redis_metric_config.display_operation = {};
+    }
+
     if (this_config.has_key("warning_range")) {
       redis_metric_config.warning_range = this_config.get<std::array<double, 2>>("warning_range");
     }
@@ -166,6 +173,9 @@ void sbndaq::GroupMetricConfig(RedisConnection *redis, const std::string &group_
       json_config["warning_range"] = Json::arrayValue;
       json_config["warning_range"][0] = config.warning_range.value()[0];
       json_config["warning_range"][1] = config.warning_range.value()[1];
+    }
+    if (config.display_operation) {
+      json_config["display_operation"] = config.display_operation.value();
     }
     if (config.alarm_range) {
       json_config["alarm_range"] = Json::arrayValue;
