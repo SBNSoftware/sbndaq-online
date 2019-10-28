@@ -1,5 +1,7 @@
 #include "RedisConnectionService.h"
 
+#include "sbndaq-online/helpers/SBNMetricManager.h"
+
 sbndaq::RedisConnectionService::RedisConnectionService(const fhicl::ParameterSet& pset, art::ActivityRegistry& reg):
   RedisConnection(pset)
 {
@@ -7,6 +9,9 @@ sbndaq::RedisConnectionService::RedisConnectionService(const fhicl::ParameterSet
   if (do_flush_post_event) {
     reg.sPostProcessEvent.watch(this, &RedisConnectionService::FlushPostEvent);
   }
+
+  // stop down any metric manager before the service destructors run
+  reg.sPostEndJob.watch(this, &RedisConnectionService::StopMetrics);
 }
 
 void sbndaq::RedisConnectionService::FlushPostEvent(art::Event const &ev, art::ScheduleContext sched) {
@@ -14,5 +19,10 @@ void sbndaq::RedisConnectionService::FlushPostEvent(art::Event const &ev, art::S
   (void) sched;
   Flush();
 }
+
+void sbndaq::RedisConnectionService::StopMetrics() {
+  sbndaq::stopMetrics();
+}
+
 
 DEFINE_ART_SERVICE(sbndaq::RedisConnectionService)

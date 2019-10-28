@@ -3,6 +3,7 @@ cet_make_library(
   SOURCE RedisConnection.cc
   LIBRARIES
     sbndaq_online_hiredis
+    artdaq-utilities_Plugins
     ${ART_FRAMEWORK_CORE}
     ${ART_FRAMEWORK_PRINCIPAL}
     ${ART_FRAMEWORK_SERVICES_REGISTRY}

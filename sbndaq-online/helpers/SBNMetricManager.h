@@ -27,6 +27,16 @@ void InitializeMetricManager(fhicl::ParameterSet const& pset) {
 
 #ifndef metricMan
 #define metricMan _I_am_the_metricMan
+
+// if we control the metric manager than we can stop it
+void stopMetrics() {
+  if (metricMan != NULL) {
+    metricMan->do_stop();
+  }
+}
+#else
+// otherwise do not attempt to stop it
+void stopMetrics() {}
 #endif
 
 // For send metrics with a raw name
