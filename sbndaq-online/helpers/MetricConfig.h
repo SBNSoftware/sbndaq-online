@@ -13,7 +13,6 @@ namespace sbndaq {
     std::experimental::optional<std::array<double, 2>> display_range;
     std::experimental::optional<std::array<double, 2>> warning_range;
     std::experimental::optional<std::array<double, 2>> alarm_range;
-    std::experimental::optional<std::string> display_operation;
     std::experimental::optional<std::string> units;
     std::experimental::optional<std::string> title;
   };

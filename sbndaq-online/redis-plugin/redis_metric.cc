@@ -35,11 +35,19 @@ namespace sbndaq {
     bool _owns_redis_connection;
 
     template<typename DataType>
-    void SendBinaryMetric(const std::string &name, DataType dat) {
+    void SendBinaryMetric(const std::string &inp_name, DataType dat) {
+      std::string meta = ValidateRedisName(GetMeta(inp_name));
+      std::string name = StripMeta(inp_name);
       std::string redis_name = ValidateRedisName(_redis_key_prefix + name + _redis_key_postfix);
       mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << dat << ")";
       TLOG(REDIS_TRACE_LEVEL_MSG) << "Adding metric to stream: (" << redis_name << ") with value (" << dat << ")";
-      _redis->Command("XADD %s MAXLEN ~ %i * %s %b", redis_name.c_str(), _stream_maxlen, DisplayType<DataType>::name, &dat, sizeof(DataType)); 
+
+      if (meta.size()) {
+        _redis->Command("XADD %s MAXLEN ~ %i * %s %b %s _", redis_name.c_str(), _stream_maxlen, DisplayType<DataType>::name, &dat, sizeof(DataType), meta.c_str()); 
+      }
+      else {
+        _redis->Command("XADD %s MAXLEN ~ %i * %s %b", redis_name.c_str(), _stream_maxlen, DisplayType<DataType>::name, &dat, sizeof(DataType)); 
+      }
     }
 
   public:
@@ -69,12 +77,20 @@ namespace sbndaq {
       if (_owns_redis_connection && _redis != NULL) delete _redis;
     }
 
-    void sendMetric_(const std::string &name, const std::string &value, const std::string &units) {
+    void sendMetric_(const std::string &inp_name, const std::string &value, const std::string &units) {
       (void) units;
+
+      std::string meta = ValidateRedisName(GetMeta(inp_name));
+      std::string name = StripMeta(inp_name);
       std::string redis_name = ValidateRedisName(_redis_key_prefix + name + _redis_key_postfix);
       mf::LogDebug("Redis Metric Plugin") << "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
       TLOG(REDIS_TRACE_LEVEL_MSG) <<  "Adding metric to stream: (" << redis_name << ") with value (" << value << ")";
-      _redis->Command("XADD %s MAXLEN ~ %i * %s %s", redis_name.c_str(), _stream_maxlen, "string", value.c_str());
+      if (meta.size()) {
+        _redis->Command("XADD %s MAXLEN ~ %i * %s %s %s _", redis_name.c_str(), _stream_maxlen, "string", value.c_str(), meta.c_str());
+      }
+      else {
+        _redis->Command("XADD %s MAXLEN ~ %i * %s %s", redis_name.c_str(), _stream_maxlen, "string", value.c_str());
+      }
     }
 
     void sendMetric_(const std::string &name, const int &value, const std::string &units) {
