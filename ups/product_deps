@@ -2,7 +2,7 @@
 
 # The *parent* line must the first non-commented line and defines this product and version
 # The version should be of the form vx_yy_zz (e.g. v1_02_03)
-parent sbndaq_online v0_03_00
+parent sbndaq_online v0_04_00
 defaultqual e17:s83
 
 # These optional lines define the installed directories where headers,
@@ -23,20 +23,20 @@ defaultqual e17:s83
 # gdmldir -
 # fwdir   -
 #
-incdir	product_dir	include
-libdir	fq_dir		lib
-bindir	fq_dir		bin
-flcdir  product_dir     fcl
+incdir  product_dir include
+libdir  fq_dir      lib
+bindir  fq_dir      bin
+flcdir  product_dir fcl
 
 # With "product  version" table below, we now define depdendencies
 # Add the dependent product and version
 
 product          version
-artdaq_utilities v1_05_02
+artdaq_utilities v1_05_03
 art              v3_02_05
 art_root_io      v1_00_05
 jsoncpp          v1_7_7c
-cetbuildtools    v7_13_02       -       only_for_build
+cetbuildtools    v7_14_00       -       only_for_build
 end_product_list
 
 # We now define allowed qualifiers and the corresponding qualifiers for the depdencies.
@@ -49,5 +49,5 @@ end_qualifier_list
 # Preserve tabs and formatting in emacs and vi / vim:
 
 ### Local Variables:
-### tab-width: 8
+### tab-width: 4
 ### End:

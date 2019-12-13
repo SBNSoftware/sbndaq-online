@@ -9,6 +9,7 @@ class RedisConnectionService : public RedisConnection {
 public:
   RedisConnectionService(const fhicl::ParameterSet& pset, art::ActivityRegistry& reg);
   void FlushPostEvent(art::Event const &ev, art::ScheduleContext sched);
+  void StopMetrics();
 };
 } // end namespace sbndaq
 

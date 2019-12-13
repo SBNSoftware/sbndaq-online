@@ -117,6 +117,7 @@ bool sbndaq::RedisConnection::ProcessRedisReply(void *r) {
   return success;
 }
   
+// NOTE: this command assumes that you have acquired the "fRedisLock" mutex
 void sbndaq::RedisConnection::NewMessage() {
   fNMessages += 1;
 
@@ -126,9 +127,11 @@ void sbndaq::RedisConnection::NewMessage() {
 }
 
 void sbndaq::RedisConnection::Flush() {
+  std::lock_guard<std::mutex> guard(fRedisLock);
   DoFlush();
 }
 
+// NOTE: this command assumes that you have acquired the "fRedisLock" mutex
 void sbndaq::RedisConnection::DoFlush() {
   while (fNMessages != 0) {
     void *reply = NULL;
@@ -151,6 +154,8 @@ bool sbndaq::RedisConnection::CheckConnection() {
 void sbndaq::RedisConnection::Command(const char *fmt, ...) {
   if (!CheckConnection()) return;
 
+  std::lock_guard<std::mutex> guard(fRedisLock);
+
   va_list argp;
   va_start(argp, fmt);
   redisvAppendCommand(fRedisContext, fmt, argp);
@@ -160,6 +165,8 @@ void sbndaq::RedisConnection::Command(const char *fmt, ...) {
 
 void sbndaq::RedisConnection::CommandArgv(int argc, const char **argv, const size_t *argvlen) {
   if (!CheckConnection()) return;
+
+  std::lock_guard<std::mutex> guard(fRedisLock);
 
   redisAppendCommandArgv(fRedisContext, argc, argv, argvlen);
   NewMessage();

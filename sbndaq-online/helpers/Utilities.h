@@ -37,6 +37,26 @@ std::string ValidateRedisName(const std::string &name) {
   return ret;
 }
 
+std::string GetMeta(const std::string &name) {
+  for (unsigned i = 0; i < name.size(); i++) {
+    if (name[i] == '/') {
+      return name.substr(0, i);
+    }
+  }
+  return "";
+}
+
+std::string StripMeta(const std::string &name) {
+  for (unsigned i = 0; i < name.size(); i++) {
+    if (name[i] == '/') {
+      if (i+1 == name.size()) return "";
+      return name.substr(i+1);
+    }
+  }
+  return name;
+}
+
+
 
 } // end namespace sbndaq
 
