@@ -3,18 +3,20 @@
 
 #include "EventMeta.h"
 #include <chrono>
+#include <ctime>
 
 using namespace std::chrono;
 
 void sbndaq::SendEventMeta(const std::string &key, const art::Event &event) {
   art::ServiceHandle<RedisConnectionService> redis;
 
-  milliseconds ms = duration_cast< milliseconds >(
-      system_clock::now().time_since_epoch()
-  );
+  //milliseconds ms = duration_cast< milliseconds >(
+  //    system_clock::now().time_since_epoch()
+  //);
+  int64_t time = ((int64_t)std::time(NULL)) * 1000; // s -> ms
   int run = event.getRun().run();
   int subrun = event.getSubRun().subRun();
   int eventID = event.id().event();
 
-  redis->Command("HMSET %s %s %i %s %i %s %i %s %i", key.c_str(), "run", run, "subrun", subrun, "event", eventID, "time", (int)ms.count()); 
+  redis->Command("HMSET %s %s %i %s %i %s %i %s %lld", key.c_str(), "run", run, "subrun", subrun, "event", eventID, "time", time); 
 }
