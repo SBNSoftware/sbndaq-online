@@ -37,9 +37,6 @@ void SendSplitWaveform(
   
   art::ServiceHandle<RedisConnectionService> redis;
 
-  // first -- delete the old key
-  redis->Command("DEL %s", key.c_str());
-
   // set the type-names
   redis->Command("HMSET %s DataType %s", key.c_str(), DisplayType<DataType>::name); 
   redis->Command("HMSET %s OffsetType %s", key.c_str(), DisplayType<OffsetType>::name);
@@ -75,9 +72,6 @@ void SendWaveform(
 
   art::ServiceHandle<RedisConnectionService> redis;
   
-  // first -- delete the old key
-  redis->Command("DEL %s", key.c_str());
-
   // set the type-names
   redis->Command("HMSET %s DataType %s", key.c_str(), DisplayType<DataType>::name); 
 
