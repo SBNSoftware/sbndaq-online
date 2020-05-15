@@ -110,6 +110,13 @@ void sbndaq::GenerateMetricConfig(const fhicl::ParameterSet &config) {
       redis_metric_config.units = {};
     }
 
+    if (this_config.has_key("format")) {
+      redis_metric_config.format = this_config.get<std::string>("format");
+    }
+    else {
+      redis_metric_config.format = {};
+    }
+
     if (this_config.has_key("title")) {
       redis_metric_config.title = this_config.get<std::string>("title");
     }
@@ -174,6 +181,9 @@ void sbndaq::GroupMetricConfig(RedisConnection *redis, const std::string &group_
     }
     if (config.units) {
       json_config["units"] = config.units.value();
+    }
+    if (config.format) {
+      json_config["format"] = config.format.value();
     }
     if (config.title) {
       json_config["title"] = config.title.value();

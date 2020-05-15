@@ -15,6 +15,7 @@ namespace sbndaq {
     std::experimental::optional<std::array<double, 2>> alarm_range;
     std::experimental::optional<std::string> units;
     std::experimental::optional<std::string> title;
+    std::experimental::optional<std::string> format;
   };
 
   void AddGroup(RedisConnection *redis, const std::string &group_name);
