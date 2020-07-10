@@ -77,10 +77,6 @@ qual_set="${qual_set}:${squal}"
 manifest_qual_set="${squal}:${basequal}"
 [[ ! -z "${pyqual+x}" ]] &&  manifest_qual_set="${manifest_qual_set}:${pyqual}"
 
-# larsoft does not use the s-qualifier
-larsoft_qual_set="${basequal}"
-[[ ! -z "${pyqual+x}" ]] && larsoft_qual_set="${larsoft_qual_set}:${pyqual}"
-
 case ${build_type} in
   debug) build_type_flag="-d" ;;
   prof) build_type_flag="-p" ;;
@@ -160,7 +156,7 @@ curl --fail --silent --location --insecure -O http://scisoft.fnal.gov/scisoft/bu
 chmod +x pullProducts pullPackage
 ./pullProducts ${products_dir} ${flvr} artdaq-${ARTDAQ_VERSION} ${manifest_qual_set//:/-} ${build_type} 2>&1 |tee ${products_dir}/pullproducts.log
 
-./pullProducts ${products_dir} ${flvr} larsoft-${LARSOFT_VERSION} ${larsoft_qual_set//:/-} ${build_type} 2>&1 |tee ${products_dir}/pullproducts.log
+./pullProducts ${products_dir} ${flvr} larsoft-${LARSOFT_VERSION} ${manifest_qual_set//:/-} ${build_type} 2>&1 |tee ${products_dir}/pullproducts.log
 
 ./pullPackage ${products_dir} sl7 python-v3_7_2 2>&1 |tee -a ${products_dir}/pullProducts.log
 
