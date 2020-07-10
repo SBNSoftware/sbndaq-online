@@ -33,20 +33,22 @@ flcdir  product_dir fcl
 
 product          version
 artdaq_utilities v1_05_05
+larsoft          v08_42_01          s94
+larsoft          v08_46_00          s96
 cetbuildtools    v7_14_00           -           only_for_build
 end_product_list
 
 # We now define allowed qualifiers and the corresponding qualifiers for the depdencies.
 # Make a table by adding columns before "notes".
-qualifier           artdaq_utilities            notes
-e19:debug:s94       debug:e19:s94        
-e19:prof:s94        prof:e19:s94         
-e19:debug:s94:py2   debug:e19:s94:py2    
-e19:prof:s94:py2    prof:e19:s94:py2     
-e19:debug:s96       debug:e19:s96        
-e19:prof:s96        prof:e19:s96         
-e19:debug:s96:py2   debug:e19:s96:py2    
-e19:prof:s96:py2    prof:e19:s96:py2 
+qualifier           artdaq_utilities    larsoft            notes
+e19:debug:s94       debug:e19:s94       debug:e19   
+e19:prof:s94        prof:e19:s94        prof:e19     
+e19:debug:s94:py2   debug:e19:s94:py2   debug:e19:py2    
+e19:prof:s94:py2    prof:e19:s94:py2    prof:e19:py2     
+e19:debug:s96       debug:e19:s96       debug:e19   
+e19:prof:s96        prof:e19:s96        prof:e19     
+e19:debug:s96:py2   debug:e19:s96:py2   debug:e19:py2    
+e19:prof:s96:py2    prof:e19:s96:py2    prof:e19:py2     
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
