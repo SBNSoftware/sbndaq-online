@@ -31,7 +31,7 @@ flcdir  product_dir fcl
 # With "product  version" table below, we now define depdendencies
 # Add the dependent product and version
 
-product          version            whichqual   keyword
+product          version            whichqual   optional
 artdaq_utilities v1_05_05
 larsoft          v08_42_01          s94
 larsoft          v08_46_00          s96
