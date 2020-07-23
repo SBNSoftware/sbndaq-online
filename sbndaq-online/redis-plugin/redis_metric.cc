@@ -33,6 +33,7 @@ namespace sbndaq {
     unsigned _stream_maxlen;
     RedisConnection *_redis;
     bool _owns_redis_connection;
+    std::set<std::string> _sent_metrics;
 
     template<typename DataType>
     void SendBinaryMetric(const std::string &inp_name, DataType dat) {
@@ -80,6 +81,11 @@ namespace sbndaq {
     void sendMetric_(const std::string &inp_name, const std::string &value, const std::string &units) {
       (void) units;
 
+      if (!_sent_metrics.count(inp_name)) {
+        _sent_metrics.insert(inp_name);
+        return;
+      }
+
       std::string meta = ValidateRedisName(GetMeta(inp_name));
       std::string name = StripMeta(inp_name);
       std::string redis_name = ValidateRedisName(_redis_key_prefix + name + _redis_key_postfix);
@@ -95,23 +101,40 @@ namespace sbndaq {
 
     void sendMetric_(const std::string &name, const int &value, const std::string &units) {
       (void) units;
+      if (!_sent_metrics.count(name)) {
+        _sent_metrics.insert(name);
+        return;
+      }
       SendBinaryMetric(name, value);
     }
 
     void sendMetric_(const std::string &name, const double &value, const std::string &units) {
       (void) units;
+      if (!_sent_metrics.count(name)) {
+        _sent_metrics.insert(name);
+        return;
+      }
       SendBinaryMetric(name, value);
     }
 
     void sendMetric_(const std::string &name, const float &value, const std::string &units) {
       (void) units;
+      if (!_sent_metrics.count(name)) {
+        _sent_metrics.insert(name);
+        return;
+      }
       SendBinaryMetric(name, value);
     }
 
     void sendMetric_(const std::string &name, const unsigned long int &value, const std::string &units) {
       (void) units;
+      if (!_sent_metrics.count(name)) {
+        _sent_metrics.insert(name);
+        return;
+      }
       SendBinaryMetric(name, value);
     }
+  
   };
 
 } // end namespace sbndaq
