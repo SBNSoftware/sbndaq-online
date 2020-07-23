@@ -22,6 +22,7 @@ void sbndaq::RedisConnectionService::FlushPostEvent(art::Event const &ev, art::S
 
 void sbndaq::RedisConnectionService::StopMetrics() {
   sbndaq::stopMetrics();
+  Flush();
 }
 
 
