@@ -28,10 +28,10 @@ void InitializeMetricManager(fhicl::ParameterSet const& pset) {
 #ifndef metricMan
 #define metricMan _I_am_the_metricMan
 
-// if we control the metric manager than we can stop it
+// if we control the metric manager then we can stop it
 void stopMetrics() {
   if (metricMan != NULL) {
-    metricMan->do_stop();
+    metricMan->shutdown();
   }
 }
 #else
