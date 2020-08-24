@@ -9,7 +9,7 @@
 
 using namespace std::chrono;
 
-void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::string description) {
+void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::string description, bool print) {
   art::ServiceHandle<RedisConnectionService> redis;
   // send meta-data information
   sbndaq::SendEventMeta(alarm, event);
@@ -47,4 +47,12 @@ void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::s
   redis->Command("SADD ALARMS %s", alarm.c_str());
   redis->Command("EXPIREAT ALARMS %lld", tstmp);
 
+  // if configured to, also print the error
+  if (print) {
+    int64_t time = ((int64_t)std::time(NULL)) * 1000; // s -> ms
+    int run = event.getRun().run();
+    int subrun = event.getSubRun().subRun();
+    int eventID = event.id().event();
+    std::cerr << "ALARM: (" << alarm << ").\nWith description: (" << description << ").\nAt timestamp (" << time << ") Run (" << run << ") Subrun (" << subrun << " Event (" << eventID << ")\n";
+  }
 }

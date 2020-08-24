@@ -6,7 +6,7 @@
 #include "art/Framework/Principal/Event.h"
 
 namespace sbndaq {
-  void SendAlarm(const std::string &alarm, const art::Event &event, std::string description="");
+  void SendAlarm(const std::string &alarm, const art::Event &event, std::string description="", bool print=true);
 }
 
 
