@@ -68,6 +68,6 @@ void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::s
     int run = event.getRun().run();
     int subrun = event.getSubRun().subRun();
     int eventID = event.id().event();
-    std::cerr << "ALARM: (" << alarm << ").\nWith description: (" << description << ").\nAt timestamp (" << time << ") Run (" << run << ") Subrun (" << subrun << " Event (" << eventID << ")\n";
+    std::cout << "ALARM: (" << alarm << ").\nWith description: (" << description << ").\nAt timestamp (" << time << ") Run (" << run << ") Subrun (" << subrun << " Event (" << eventID << ")\n";
   }
 }
