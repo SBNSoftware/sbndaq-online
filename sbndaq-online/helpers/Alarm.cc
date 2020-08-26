@@ -6,6 +6,7 @@
 #include <chrono>
 #include <ctime>
 #include <time.h>
+#include <unistd.h>
 
 using namespace std::chrono;
 
@@ -22,6 +23,20 @@ void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::s
 
   // set the description
   redis->Command("HMSET %s description %s", alarm.c_str(), description.c_str());
+
+  // get the log file
+  char logfile[1000];
+  // NOTE: LUNIX ONLY
+  // get the name of the logfile (stdout) from /proc
+  ssize_t len = readlink("/proc/self/fd/1", logfile, 1000);
+  // readlink does not NULL-terminate
+  if (len != -1) {
+      logfile[len] = '\0';
+  }
+  else { // failed
+    strcpy(logfile, "UNAVAILABLE");
+  }
+  redis->Command("HMSET %s logfile %s", alarm.c_str(), logfile);
 
   // set to expire at the end of the day
   // get now
