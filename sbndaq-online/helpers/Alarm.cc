@@ -33,7 +33,7 @@ void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::s
   char logfile[1000];
   // NOTE: LUNIX ONLY
   // get the name of the logfile (stdout) from /proc
-  ssize_t len = readlink("/proc/self/fd/1", logfile, 1000);
+  ssize_t len = readlink("/proc/self/fd/1", logfile, 1001);
   // readlink does not NULL-terminate
   if (len != -1) {
       logfile[len] = '\0';
