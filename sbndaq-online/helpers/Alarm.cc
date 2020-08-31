@@ -30,10 +30,10 @@ void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::s
   redis->Command("HMSET %s description %s", alarm.c_str(), description.c_str());
 
   // get the log file
-  char logfile[1000];
+  char logfile[1001];
   // NOTE: LUNIX ONLY
   // get the name of the logfile (stdout) from /proc
-  ssize_t len = readlink("/proc/self/fd/1", logfile, 1001);
+  ssize_t len = readlink("/proc/self/fd/1", logfile, 1000);
   // readlink does not NULL-terminate
   if (len != -1) {
       logfile[len] = '\0';
