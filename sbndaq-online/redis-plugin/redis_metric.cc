@@ -114,7 +114,7 @@ namespace sbndaq {
         _sent_metrics.insert(name);
         return;
       }
-      SendBinaryMetric(name, value);
+      SendBinaryMetric(name, (float)value);
     }
 
     void sendMetric_(const std::string &name, const float &value, const std::string &units) {
