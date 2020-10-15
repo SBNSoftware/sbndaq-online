@@ -17,6 +17,11 @@ void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::s
 
   // update counter
   redis->Command("HINCRBY %s count 1", alarm.c_str());
+    
+  int64_t time = ((int64_t)std::time(NULL)) * 1000; // s -> ns
+
+  // set the first reported time for this alarm
+  redis->Command("HSETNX %s start %lld", alarm.c_str(), time);
 
   // set description 
   if (description == "") description = "empty";
@@ -25,7 +30,7 @@ void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::s
   redis->Command("HMSET %s description %s", alarm.c_str(), description.c_str());
 
   // get the log file
-  char logfile[1000];
+  char logfile[1001];
   // NOTE: LUNIX ONLY
   // get the name of the logfile (stdout) from /proc
   ssize_t len = readlink("/proc/self/fd/1", logfile, 1000);
@@ -38,7 +43,7 @@ void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::s
   }
   redis->Command("HMSET %s logfile %s", alarm.c_str(), logfile);
 
-  // set to expire at the end of the day
+  // Set expire
   // get now
   system_clock::time_point now = system_clock::now();
   // convert to ctime to set times    
@@ -46,25 +51,43 @@ void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::s
   struct tm tmval;
   struct tm *timeset = localtime_r(&ctime, &tmval);
   assert(timeset);
+
+  // the two expires
+  struct tm next_midday = *timeset;
+  struct tm next_midnight = *timeset;
+
   // set to midnight tomorrow
-  timeset->tm_hour = 0;
-  timeset->tm_min = 0;
-  timeset->tm_sec = 0;
-  timeset->tm_mday += 1;
+  next_midnight.tm_hour = 0;
+  next_midnight.tm_min = 0;
+  next_midnight.tm_sec = 0;
+  next_midnight.tm_mday += 1;
+
+  // set to next midday
+  if (timeset->tm_hour >= 12) next_midday.tm_mday += 1;
+  next_midday.tm_hour = 12;
+  next_midday.tm_min = 0;
+  next_midday.tm_sec = 0;
 
   // get us back to a unix timestamp
-  time_t time_tval = std::mktime(timeset);
-  int tstmp = static_cast<long int>(time_tval);
+  time_t time_tval_night = std::mktime(&next_midnight);
+  int tstmp_night = static_cast<long int>(time_tval_night);
 
-  redis->Command("EXPIREAT %s %lld", alarm.c_str(), tstmp);
+  time_t time_tval_day = std::mktime(&next_midday);
+  int tstmp_day = static_cast<long int>(time_tval_day);
+
+  // this alarm expires at the latter of the two timestamps
+  redis->Command("EXPIREAT %s %lld", alarm.c_str(), std::max(tstmp_night, tstmp_day));
 
   // store the alarm in the list and also expire that at midnight
-  redis->Command("SADD ALARMS %s", alarm.c_str());
-  redis->Command("EXPIREAT ALARMS %lld", tstmp);
+  redis->Command("SADD ALARMS_MIDNIGHT %s", alarm.c_str());
+  redis->Command("EXPIREAT ALARMS_MIDNIGHT %lld", tstmp_night);
+
+  // and midday
+  redis->Command("SADD ALARMS_MIDDAY %s", alarm.c_str());
+  redis->Command("EXPIREAT ALARMS_MIDDAY %lld", tstmp_day);
 
   // if configured to, also print the error
   if (print) {
-    int64_t time = ((int64_t)std::time(NULL)) * 1000; // s -> ms
     int run = event.getRun().run();
     int subrun = event.getSubRun().subRun();
     int eventID = event.id().event();

@@ -34,7 +34,7 @@ flcdir  product_dir fcl
 product          version            whichqual   optional
 artdaq_utilities v1_05_07a
 sbncode          v09_06_00          
-cetbuildtools    v7_14_00           -           only_for_build
+cetbuildtools    v7_17_01           -           only_for_build
 end_product_list
 
 # We now define allowed qualifiers and the corresponding qualifiers for the depdencies.
