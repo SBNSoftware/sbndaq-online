@@ -33,13 +33,13 @@ flcdir  product_dir fcl
 
 product          version            whichqual   optional
 artdaq_utilities v1_05_07a
-larsoft          v09_03_00          
+sbncode          v09_06_00          
 cetbuildtools    v7_14_00           -           only_for_build
 end_product_list
 
 # We now define allowed qualifiers and the corresponding qualifiers for the depdencies.
 # Make a table by adding columns before "notes".
-qualifier           artdaq_utilities    larsoft            notes
+qualifier           artdaq_utilities    sbncode            notes
 e19:debug:s94       debug:e19:s94       debug:e19   
 e19:prof:s94        prof:e19:s94        prof:e19     
 e19:debug:s94:py2   debug:e19:s94:py2   debug:e19:py2    
