@@ -12,6 +12,10 @@ cet_make_library(LIBRARY_NAME sbndaq_online_storage
     JSONCPP
 )
 
+simple_plugin(InitMetricManager "service"
+  sbndaq_online_storage
+)
+
 install_source()
 install_headers()
 
