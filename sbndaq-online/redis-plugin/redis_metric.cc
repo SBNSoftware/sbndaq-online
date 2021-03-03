@@ -78,7 +78,8 @@ namespace sbndaq {
       if (_owns_redis_connection && _redis != NULL) delete _redis;
     }
 
-    void sendMetric_(const std::string &inp_name, const std::string &value, const std::string &units) {
+    void sendMetric_(const std::string &inp_name, const std::string &value, const std::string &units, 
+		     const std::chrono::system_clock::time_point& ) {
       (void) units;
 
       if (!_sent_metrics.count(inp_name)) {
@@ -99,7 +100,8 @@ namespace sbndaq {
       }
     }
 
-    void sendMetric_(const std::string &name, const int &value, const std::string &units) {
+    void sendMetric_(const std::string &name, const int &value, const std::string &units,
+		     const std::chrono::system_clock::time_point& ) {
       (void) units;
       if (!_sent_metrics.count(name)) {
         _sent_metrics.insert(name);
@@ -108,7 +110,8 @@ namespace sbndaq {
       SendBinaryMetric(name, value);
     }
 
-    void sendMetric_(const std::string &name, const double &value, const std::string &units) {
+    void sendMetric_(const std::string &name, const double &value, const std::string &units,
+		     const std::chrono::system_clock::time_point& ) {
       (void) units;
       if (!_sent_metrics.count(name)) {
         _sent_metrics.insert(name);
@@ -117,7 +120,8 @@ namespace sbndaq {
       SendBinaryMetric(name, (float)value);
     }
 
-    void sendMetric_(const std::string &name, const float &value, const std::string &units) {
+    void sendMetric_(const std::string &name, const float &value, const std::string &units,
+		     const std::chrono::system_clock::time_point& ) {
       (void) units;
       if (!_sent_metrics.count(name)) {
         _sent_metrics.insert(name);
@@ -126,7 +130,8 @@ namespace sbndaq {
       SendBinaryMetric(name, value);
     }
 
-    void sendMetric_(const std::string &name, const unsigned long int &value, const std::string &units) {
+    void sendMetric_(const std::string &name, const unsigned long int &value, const std::string &units,
+		     const std::chrono::system_clock::time_point& ) {
       (void) units;
       if (!_sent_metrics.count(name)) {
         _sent_metrics.insert(name);

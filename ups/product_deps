@@ -2,7 +2,7 @@
 
 # The *parent* line must the first non-commented line and defines this product and version
 # The version should be of the form vx_yy_zz (e.g. v1_02_03)
-parent sbndaq_online v0_07_03
+parent sbndaq_online v0_07_04
 defaultqual e19
 
 # These optional lines define the installed directories where headers,
@@ -32,7 +32,7 @@ flcdir  product_dir fcl
 # Add the dependent product and version
 
 product          version            whichqual   optional
-artdaq_utilities v1_05_08
+artdaq_utilities v1_05_11
 cetbuildtools    v7_17_01           -           only_for_build
 end_product_list
 
@@ -47,10 +47,14 @@ e19:debug:s96       debug:e19:s96
 e19:prof:s96        prof:e19:s96        
 e19:debug:s96:py2   debug:e19:s96:py2   
 e19:prof:s96:py2    prof:e19:s96:py2    
-e19:debug       	debug:e19:s102      
-e19:prof        	prof:e19:s102       
-e19:debug:py2   	debug:e19:s102:py2  
-e19:prof:py2    	prof:e19:s102:py2   
+e19:debug       	debug:e19:s106      
+e19:prof        	prof:e19:s106       
+e19:debug:py2   	debug:e19:s106:py2  
+e19:prof:py2    	prof:e19:s106:py2   
+e20:debug       	debug:e20:s106      
+e20:prof        	prof:e20:s106       
+e20:debug:py2   	debug:e20:s106:py2  
+e20:prof:py2    	prof:e20:s106:py2   
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
