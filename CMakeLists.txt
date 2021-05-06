@@ -19,14 +19,8 @@ cmake_minimum_required (VERSION 3.14)
 project(sbndaq-online)
 
 # cetbuildtools contains our cmake modules
-SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
-IF (NOT CETBUILDTOOLS_VERSION)
-    MESSAGE (FATAL_ERROR "ERROR: setup cetbuildtools to get the cmake modules")
-ENDIF()
-
-set(CMAKE_MODULE_PATH $ENV{ART_DIR}/Modules
-		      $ENV{CETBUILDTOOLS_DIR}/Modules
-		      ${CMAKE_MODULE_PATH})
+find_package(cetbuildtools REQUIRED)
+list(APPEND CMAKE_MODULE_PATH $ENV{ART_DIR}/Modules)
 
 include(CetCMakeEnv)
 cet_cmake_env()
@@ -44,6 +38,7 @@ find_ups_product( art_root_io v1_00_05)
 find_ups_product( artdaq_utilities  v1_05_02)
 find_ups_product( TRACE v3_15_03 )
 find_ups_product( cetbuildtools v7_13_02 )
+
 
 # macros for dictionary and simple_plugin
 #include(ArtDictionary)
