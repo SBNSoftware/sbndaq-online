@@ -14,8 +14,9 @@ void sbndaq::SendEventMeta(const std::string &key, const art::Event &event) {
   //    system_clock::now().time_since_epoch()
   //);
   int64_t time = ((int64_t)std::time(NULL)) * 1000; // s -> ms
-  int run = event.getRun().run();
-  int subrun = event.getSubRun().subRun();
+  
+  int run = event.id().run();
+  int subrun = event.id().subRun();
   int eventID = event.id().event();
 
   redis->Command("HMSET %s %s %i %s %i %s %i %s %lld", key.c_str(), "run", run, "subrun", subrun, "event", eventID, "time", time); 

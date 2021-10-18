@@ -13,19 +13,34 @@
 # ======================================================================
 
 
-# use cmake 2.8 or later
-cmake_minimum_required (VERSION 3.14)
+cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
-project(sbndaq-online)
-
-# cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
-list(APPEND CMAKE_MODULE_PATH $ENV{ART_DIR}/Modules)
+
+#find_package(cetmodules)
+#set(CET_CETBUILDTOOLS_COMPAT TRUE)
+#include(Compatibility)
+#set(CET_WARN_DEPRECATED)
+
+project(sbndaq_online VERSION 1.00.00 ) #LANGUAGES CXX)
+
+SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
+IF (NOT CETBUILDTOOLS_VERSION)
+    MESSAGE (FATAL_ERROR "ERROR: setup cetbuildtools to get the cmake modules")
+ENDIF()
+set(CMAKE_MODULE_PATH $ENV{CETBUILDTOOLS_DIR}/Modules
+                      $ENV{ARTDAQ_UTILITIES_DIR}/Modules
+		      ${CMAKE_MODULE_PATH})
+
+#
+#set(CMAKE_MODULE_PATH
+#  $ENV{ARTDAQ_UTILITIES_DIR}/Modules
+#  ${CMAKE_MODULE_PATH})
 
 include(CetCMakeEnv)
 cet_cmake_env()
 
-cet_set_compiler_flags(DIAGS CAUTIOUS
+cet_set_compiler_flags(DIAGS VIGILANT
   WERROR
   NO_UNDEFINED
 #  EXTRA_FLAGS -pedantic
@@ -33,15 +48,31 @@ cet_set_compiler_flags(DIAGS CAUTIOUS
 cet_report_compiler_flags()
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( art v3_02_05 )
-find_ups_product( art_root_io v1_00_05)
-find_ups_product( artdaq_utilities  v1_05_02)
-find_ups_product( TRACE v3_15_03 )
-find_ups_product( cetbuildtools v7_13_02 )
+
+find_ups_product( artdaq_utilities v1_00_00 )
+find_ups_boost(v1_53_0)
+find_ups_product (cetbuildtools v4_09_02)
+find_ups_product( TRACE v3_03_00 )
+find_ups_product( cetlib v1_08_00 )
+find_ups_product( cetpkgsupport v1_08_03 )
+find_ups_product( fhiclcpp v3_04_00 )
+find_ups_product( messagefacility v1_14_01 )
+find_ups_product( art )
+find_ups_root()
+
+#find_package( art)
+
+
+#find_ups_product( art_root_io )
+#find_ups_product( artdaq_utilities )
+#find_ups_product( TRACE )
+#find_ups_boost()
+#find_ups_product( cetbuildtools v7_13_02 )
 
 
 # macros for dictionary and simple_plugin
 #include(ArtDictionary)
+#include(BasicPlugin)
 include(ArtMake)
 include(BuildPlugins)
 

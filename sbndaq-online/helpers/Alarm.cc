@@ -88,8 +88,8 @@ void sbndaq::SendAlarm(const std::string &alarm, const art::Event &event, std::s
 
   // if configured to, also print the error
   if (print) {
-    int run = event.getRun().run();
-    int subrun = event.getSubRun().subRun();
+    int run = event.id().run();
+    int subrun = event.id().subRun();
     int eventID = event.id().event();
     std::cout << "ALARM: (" << alarm << ").\nWith description: (" << description << ").\nAt timestamp (" << time << ") Run (" << run << ") Subrun (" << subrun << " Event (" << eventID << ")\n";
   }

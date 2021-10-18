@@ -70,7 +70,7 @@ sbndaq::RedisConnection::~RedisConnection() {
 }
 
 // TODO: implement
-void sbndaq::RedisConnection::ProcessRedisReturn(int retval) {}
+void sbndaq::RedisConnection::ProcessRedisReturn(int ) {}
 // TODO: implement
 bool sbndaq::RedisConnection::ProcessRedisReply(void *r) {
   if (r == NULL) {

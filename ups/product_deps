@@ -1,9 +1,8 @@
 # This @product_deps@ file defines dependencies for this package.
 
-# The *parent* line must the first non-commented line and defines this product and version
-# The version should be of the form vx_yy_zz (e.g. v1_02_03)
-parent sbndaq_online v0_07_05
-defaultqual e19
+# The *parent* line must the first non-commented line and defines this product
+parent sbndaq_online
+defaultqual e20
 
 # These optional lines define the installed directories where headers,
 # libraries, and executables will be found.
@@ -31,30 +30,17 @@ flcdir  product_dir fcl
 # With "product  version" table below, we now define depdendencies
 # Add the dependent product and version
 
-product          version            whichqual   optional
-artdaq_utilities v1_05_11
-cetbuildtools    v7_17_01           -           only_for_build
+product          version  
+artdaq_utilities v1_06_03
+art              v3_09_03
+cetbuildtools    v8_18_05 - only_for_build
 end_product_list
 
 # We now define allowed qualifiers and the corresponding qualifiers for the depdencies.
 # Make a table by adding columns before "notes".
-qualifier           artdaq_utilities    notes
-e19:debug:s94       debug:e19:s94       
-e19:prof:s94        prof:e19:s94        
-e19:debug:s94:py2   debug:e19:s94:py2   
-e19:prof:s94:py2    prof:e19:s94:py2    
-e19:debug:s96       debug:e19:s96       
-e19:prof:s96        prof:e19:s96        
-e19:debug:s96:py2   debug:e19:s96:py2   
-e19:prof:s96:py2    prof:e19:s96:py2    
-e19:debug       	debug:e19:s106      
-e19:prof        	prof:e19:s106       
-e19:debug:py2   	debug:e19:s106:py2  
-e19:prof:py2    	prof:e19:s106:py2   
-e20:debug       	debug:e20:s106      
-e20:prof        	prof:e20:s106       
-e20:debug:py2   	debug:e20:s106:py2  
-e20:prof:py2    	prof:e20:s106:py2   
+qualifier           artdaq_utilities    art        notes
+e20:debug       	debug:e20:s112      e20:debug
+e20:prof        	prof:e20:s112       e20:prof
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
