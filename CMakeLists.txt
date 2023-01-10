@@ -15,27 +15,25 @@
 
 cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
-find_package(cetbuildtools REQUIRED)
+find_package(cetmodules)
+set(CET_CETBUILDTOOLS_COMPAT TRUE)
+include(Compatibility)
+set(CET_WARN_DEPRECATED)
 
-#find_package(cetmodules)
-#set(CET_CETBUILDTOOLS_COMPAT TRUE)
-#include(Compatibility)
-#set(CET_WARN_DEPRECATED)
+project(sbndaq_online VERSION 1.01.00 ) #LANGUAGES CXX)
 
-project(sbndaq_online VERSION 1.00.00 ) #LANGUAGES CXX)
+#SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
+#IF (NOT CETBUILDTOOLS_VERSION)
+#    MESSAGE (FATAL_ERROR "ERROR: setup cetbuildtools to get the cmake modules")
+#ENDIF()
+#set(CMAKE_MODULE_PATH $ENV{CETBUILDTOOLS_DIR}/Modules
+#                      $ENV{ARTDAQ_UTILITIES_DIR}/Modules
+#		      ${CMAKE_MODULE_PATH})
 
-SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
-IF (NOT CETBUILDTOOLS_VERSION)
-    MESSAGE (FATAL_ERROR "ERROR: setup cetbuildtools to get the cmake modules")
-ENDIF()
-set(CMAKE_MODULE_PATH $ENV{CETBUILDTOOLS_DIR}/Modules
-                      $ENV{ARTDAQ_UTILITIES_DIR}/Modules
-		      ${CMAKE_MODULE_PATH})
 
-#
-#set(CMAKE_MODULE_PATH
-#  $ENV{ARTDAQ_UTILITIES_DIR}/Modules
-#  ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH
+  $ENV{ARTDAQ_UTILITIES_DIR}/Modules
+  ${CMAKE_MODULE_PATH})
 
 include(CetCMakeEnv)
 cet_cmake_env()
@@ -69,6 +67,7 @@ find_ups_root()
 #find_ups_boost()
 #find_ups_product( cetbuildtools v7_13_02 )
 
+link_directories("$ENV{ARTDAQ_UTILITIES_LIB}")
 
 # macros for dictionary and simple_plugin
 #include(ArtDictionary)
