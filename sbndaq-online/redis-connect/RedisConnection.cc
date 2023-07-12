@@ -18,7 +18,9 @@ sbndaq::RedisConnection::RedisConnection(const fhicl::ParameterSet& pset) {
 
   fFailedConnection = false;
   
-  fRedisPassword = pset.get<std::string>("password", "");
+  //fRedisPassword = pset.get<std::string>("password", "");
+  fRedisPassword = pset.get<std::string>("password", "B4730D6D9606E3EB37048EB017D4C69EFB56243CCC408E3BEC3BFDEEDF792876");
+
   if (fRedisPassword.size() == 0) {
     std::string redis_password_file = pset.get<std::string>("passfile", "");
     if (redis_password_file.size() > 0) {
