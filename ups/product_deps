@@ -2,7 +2,7 @@
 
 # The *parent* line must the first non-commented line and defines this product
 parent sbndaq_online
-defaultqual e20
+defaultqual e26
 
 # These optional lines define the installed directories where headers,
 # libraries, and executables will be found.
@@ -31,7 +31,7 @@ flcdir  product_dir fcl
 # Add the dependent product and version
 
 product          version  
-artdaq_utilities v1_08_04
+artdaq_utilities v1_08_06
 art              v3_12_00
 cetmodules       v3_20_00 - only_for_build
 end_product_list
@@ -39,8 +39,10 @@ end_product_list
 # We now define allowed qualifiers and the corresponding qualifiers for the depdencies.
 # Make a table by adding columns before "notes".
 qualifier           artdaq_utilities    art        notes
-e20:debug       	debug:e20:s120a      e20:debug
-e20:prof        	prof:e20:s120a       e20:prof
+e20:debug       	debug:e20:s120a     e20:debug
+e20:prof        	prof:e20:s120a      e20:prof
+e26:debug       	debug:e26:s120a     e26:debug
+e26:prof        	prof:e26:s120a      e26:prof
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
