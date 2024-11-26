@@ -4,24 +4,26 @@ cet_make_library(
   LIBRARIES
     sbndaq_online_hiredis
     artdaq_utilities::artdaq-utilities_Plugins
-    ${ART_FRAMEWORK_CORE}
-    ${ART_FRAMEWORK_PRINCIPAL}
-    ${ART_FRAMEWORK_SERVICES_REGISTRY}
-    art_Persistency_Common canvas
-    art_Persistency_Provenance canvas
-    ${ART_FRAMEWORK_SERVICES_BASIC}
-    ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-    ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-    ${ART_FRAMEWORK_SERVICES_SYSTEM_FILECATALOGMETADATA_SERVICE}
-    art_Utilities canvas
-    ${MF_MESSAGELOGGER}
-    fhiclcpp 
-    cetlib cetlib_except
-    ${ROOT_BASIC_LIB_LIST}
+    art::Framework_Core
+    art::Framework_Principal
+    art::Framework_Services_Registry
+    art::Framework_Services_System_FileCatalogMetadata_service
+    art::Persistency_Common
+    art::Persistency_Provenance
+    canvas::canvas
+    art_root_io::tfile_support
+    art_root_io::TFileService_service
+    ROOT::Core
+    art::Utilities
+    messagefacility::MF_MessageLogger
+    fhiclcpp::fhiclcpp
+    cetlib::cetlib
+    cetlib_except::cetlib_except
 )
 
 
-simple_plugin(RedisConnection "service"
+cet_build_plugin(RedisConnection art::service
+  LIBRARIES
   sbndaq_online_redis_connection
 )
 install_headers()
