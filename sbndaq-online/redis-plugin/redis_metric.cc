@@ -52,7 +52,7 @@ namespace sbndaq {
     }
 
   public:
-    RedisMetric(fhicl::ParameterSet const& pset, std::string const& app_name, std::string plugin_name="RedisMetricPlugin"): 
+    RedisMetric(fhicl::ParameterSet const& pset, std::string const& app_name, std::string plugin_name="RedisMetricPlugin"):
       MetricPlugin(pset, app_name, plugin_name)
     {
       _redis_key_postfix = pset.get<std::string>("redis_key_postfix", "");
