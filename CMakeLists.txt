@@ -21,7 +21,7 @@ set(CET_CETBUILDTOOLS_COMPAT TRUE)
 include(Compatibility)
 set(CET_WARN_DEPRECATED)
 
-project(sbndaq_online VERSION 1.01.00 ) #LANGUAGES CXX)
+project(sbndaq_online VERSION 1.02.00 ) #LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH
   $ENV{ARTDAQ_UTILITIES_DIR}/Modules
@@ -61,9 +61,6 @@ include(BuildPlugins)
 # ADD SOURCE CODE SUBDIRECTORIES HERE
 add_subdirectory(sbndaq-online)
 
-# ups - table and config files
-add_subdirectory(ups)
-
 # packaging utility
-include(UseCPack)
-#cet_cmake_config()
+#include(UseCPack)
+cet_cmake_config()
